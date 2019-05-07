@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use Auth;
 use App\Models\User;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Auth;
 use App\Transformers\Api\UserTransformer;
 
 class AuthController extends BaseController
@@ -17,10 +17,16 @@ class AuthController extends BaseController
      */
     public function __construct()
     {
+        parent::__construct();
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
         // 但是我推荐用 『jwt.auth』，效果是一样的，但是有更加丰富的报错信息返回
     }
 
+    /**
+     * 注册方法
+     *
+     * @param \App\Http\Requests\UserRequest $request
+     */
     public function register(UserRequest $request)
     {
         $user = User::create([
@@ -29,7 +35,7 @@ class AuthController extends BaseController
             'password' => $request->get('password'),
         ]);
 
-        return $this->response->item($user, new UserTransformer())
+        $this->response->item($user, new UserTransformer())
             ->setMeta([
                 'access_token' => Auth::guard('api')->fromUser($user),
                 'token_type' => 'Bearer',
@@ -50,10 +56,10 @@ class AuthController extends BaseController
         $credentials['password'] = $request->get('password');
 
         if (! $token = auth('api')->attempt($credentials)) {
-            return $this->response->errorUnauthorized("用户名或者密码错误!");
+            $this->response->errorUnauthorized("用户名或者密码错误!");
         }
 
-        return $this->respondWithToken($token)->setStatusCode(201);
+        $this->respondWithToken($token)->setStatusCode(201);
     }
 
     /**

@@ -32,6 +32,10 @@ class UserRequest extends FormRequest
         ];
     }
 
+    /**错误信息提示
+     *
+     * @return array
+     */
     public function messages()
     {
         return [

@@ -37,7 +37,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         API::error(function (\Tymon\JWTAuth\Exceptions\TokenExpiredException $exception) {
-                throw  new  \Symfony\Component\HttpKernel\Exception\HttpException(201, '登录失效!');
+            throw  new  \Symfony\Component\HttpKernel\Exception\HttpException(201, '登录Token失效!');
+        });
+
+        API::error(function (\Dingo\Api\Exception\RateLimitExceededException $exception) {
+            throw  new  \Symfony\Component\HttpKernel\Exception\HttpException(429, '访问有点频繁哦!');
         });
     }
 }

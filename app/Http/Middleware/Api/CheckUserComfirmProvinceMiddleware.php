@@ -17,9 +17,13 @@ class CheckUserComfirmProvinceMiddleware
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        $user = Auth::guard('api')->user();
-        if ($user->province_id == 0) {
-            return response()->json(['message' => '请填写考生信息', 'status_code' => 301]);
+        if (Auth::guard('api')->check()) {
+            $user = Auth::guard('api')->user();
+            if ($user->province_id == 0) {
+                return response()->json(['message' => '请填写考生信息', 'status_code' => 301]);
+            }
+        } else {
+            return response()->json(['message' => '请先登录', 'status_code' => 301]);
         }
 
         return $next($request);
